@@ -4,3 +4,5 @@
 
 # II. Comparaison des implémentations 
 # III. Comparaison avec les implémentations de _MKxstend_ et _Spark MLlib_
+
+# Bibliographie
