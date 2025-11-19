@@ -1,8 +1,8 @@
+# Initialize Spark session
 from pyspark.sql import SparkSession
 from pyspark.ml.fpm import FPGrowth
 import pandas as pd
-import os
-print(os.environ.get("JAVA_HOME"))
+spark = SparkSession.builder.appName('Spark Playground').getOrCreate()
 
 
 transactions = [
@@ -13,16 +13,10 @@ transactions = [
     ["Bread", "Milk", "Diapers", "Coke"],
 ]
 
-df_2 = pd.DataFrame({
+df_pd = pd.DataFrame({
     'items': transactions
 })
-
-spark = SparkSession.builder \
-    .appName("FPGrowthExample") \
-    .master("local[*]") \
-    .config("spark.driver.userClassPathFirst", "true") \
-    .getOrCreate()
-
+df_2 = spark.createDataFrame(df_pd)
 
 fp = FPGrowth(
     itemsCol="items",
@@ -46,3 +40,48 @@ model.associationRules.show(truncate=False)
 # --------------------------------------------
 print("Predictions:")
 model.transform(df_2).show(truncate=False)
+
+
+"""
+Résultats du programme (https://www.sparkplayground.com/pyspark-online-compiler/) :
+
+Frequent Itemsets:
++----------------+----+
+|items           |freq|
++----------------+----+
+|[Milk]          |4   |
+|[Milk, Diapers] |3   |
+|[Milk, Bread]   |3   |
+|[Bread]         |4   |
+|[Diapers]       |4   |
+|[Diapers, Bread]|3   |
+|[Beer]          |3   |
+|[Beer, Diapers] |3   |
++----------------+----+
+
+Association Rules:
++----------+----------+----------+------+-------+
+|antecedent|consequent|confidence|lift  |support|
++----------+----------+----------+------+-------+
+|[Milk]    |[Diapers] |0.75      |0.9375|0.6    |
+|[Milk]    |[Bread]   |0.75      |0.9375|0.6    |
+|[Beer]    |[Diapers] |1.0       |1.25  |0.6    |
+|[Diapers] |[Milk]    |0.75      |0.9375|0.6    |
+|[Diapers] |[Bread]   |0.75      |0.9375|0.6    |
+|[Diapers] |[Beer]    |0.75      |1.25  |0.6    |
+|[Bread]   |[Milk]    |0.75      |0.9375|0.6    |
+|[Bread]   |[Diapers] |0.75      |0.9375|0.6    |
++----------+----------+----------+------+-------+
+
+Predictions:
++----------------------------+----------+
+|items                       |prediction|
++----------------------------+----------+
+|[Bread, Milk]               |[Diapers] |
+|[Bread, Diapers, Beer, Eggs]|[Milk]    |
+|[Milk, Diapers, Beer, Coke] |[Bread]   |
+|[Bread, Milk, Diapers, Beer]|[]        |
+|[Bread, Milk, Diapers, Coke]|[Beer]    |
++----------------------------+----------+
+
+"""
