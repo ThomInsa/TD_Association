@@ -34,13 +34,13 @@ def avg_runtime(transactions, minsup, method, runs=5):
 
 def benchmark():
     # --- Figure 1
-    minsup_left = 0.5
+    minsup_left = 0.8
     n_items_left = 15
     width_range_left = (3, 5)
 
     # --- Figure 2
-    minsup_right = 0.05
-    n_items_right = 17
+    minsup_right = 0.1
+    n_items_right = 15
     width_range_right = (5, 8)
 
     sizes = [500, 1000, 1500, 2000]
@@ -73,7 +73,7 @@ def benchmark():
     axes[0].plot(sizes, results_left["bruteforce"], label="Brute-force")
     axes[0].plot(sizes, results_left["stepwise"], label="Fk-1 × F1")
     axes[0].plot(sizes, results_left["selfjoin"], label="Fk-1 × Fk-1")
-    axes[0].set_title("Méthodes similaires (minsup élevé, petits paniers)")
+    axes[0].set_title("Minsup élevé, petits paniers")
     axes[0].set_xlabel("Nombre de transactions")
     axes[0].set_ylabel("Temps (s)")
     axes[0].legend()
@@ -82,7 +82,7 @@ def benchmark():
     axes[1].plot(sizes, results_right["bruteforce"], label="Brute-force")
     axes[1].plot(sizes, results_right["stepwise"], label="Fk-1 × F1")
     axes[1].plot(sizes, results_right["selfjoin"], label="Fk-1 × Fk-1")
-    axes[1].set_title("Brute-force devient très lent (minsup faible, paniers larges)")
+    axes[1].set_title("Minsup faible, grands paniers")
     axes[1].set_xlabel("Nombre de transactions")
     axes[1].legend()
 
