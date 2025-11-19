@@ -261,6 +261,25 @@ Une méthode intéressante dans cette approche est appelée croissance de motifs
 
 > Cette approche peut donc réduire considérablement la taille des ensembles de données à analyser, ainsi que le nombre de motifs examinés.
 
+Résultats de notre programme:
+
+```plaintext
+Frequent Itemsets:
++----------------+----+
+|items           |freq|
++----------------+----+
+|[Milk]          |4   |
+|[Milk, Diapers] |3   |
+|[Milk, Bread]   |3   |
+|[Bread]         |4   |
+|[Diapers]       |4   |
+|[Diapers, Bread]|3   |
+|[Beer]          |3   |
+|[Beer, Diapers] |3   |
++----------------+----+
+```
+
+
 # Bibliographie
 
 - Data mining : concepts and techniques, Section 4.2 (2023)
