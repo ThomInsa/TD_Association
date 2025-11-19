@@ -79,9 +79,11 @@ def frequent_itemset_generation_stepwise(transaction_collection, minsup, verbose
 
         candidate_counts = {c: 0 for c in Ck}
         for transaction in transaction_collection:
-            for candidate in Ck:
-                if candidate.issubset(transaction):
-                    candidate_counts[candidate] += 1
+            if len(transaction) >= k:
+                for subset in combinations(transaction, k):
+                    subset_frozen = frozenset(subset)
+                    if subset_frozen in candidate_counts:
+                        candidate_counts[subset_frozen] += 1
 
         Lk = {c: count for c, count in candidate_counts.items() if count >= minsup}
 
@@ -147,9 +149,11 @@ def frequent_itemset_generation_selfjoin(transaction_collection, minsup, verbose
 
         candidate_counts = {c: 0 for c in Ck}
         for transaction in transaction_collection:
-            for candidate in Ck:
-                if candidate.issubset(transaction):
-                    candidate_counts[candidate] += 1
+            if len(transaction) >= k:
+                for subset in combinations(transaction, k):
+                    subset_frozen = frozenset(subset)
+                    if subset_frozen in candidate_counts:
+                        candidate_counts[subset_frozen] += 1
 
         Lk = {c: count for c, count in candidate_counts.items() if count >= minsup}
 
