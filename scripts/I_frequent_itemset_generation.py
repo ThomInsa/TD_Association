@@ -14,6 +14,7 @@ def frequent_itemset_generation_bruteforce(transaction_collection, minsup, verbo
     all_items = sorted(all_items)
 
     frequent_itemsets = {}
+    infrequent_items = set()  # Track infrequent 1-itemsets
 
     if verbose:
         print("Méthode Brute-force")
@@ -26,6 +27,17 @@ def frequent_itemset_generation_bruteforce(transaction_collection, minsup, verbo
 
         for itemset in combinations(all_items, size):
             itemset_frozen = frozenset(itemset)
+
+            # For size > 1, check if any item in the itemset is infrequent
+            if size > 1:
+                has_infrequent_item = any(item in infrequent_items for item in itemset)
+
+                if has_infrequent_item:
+                    if verbose:
+                        itemset_str = ",".join(sorted(itemset))
+                        print(f"{itemset_str} N")
+                    continue
+
             # Count support
             count = sum(1 for t in transaction_collection if itemset_frozen.issubset(t))
 
@@ -37,6 +49,9 @@ def frequent_itemset_generation_bruteforce(transaction_collection, minsup, verbo
             if count >= minsup:
                 size_itemsets[itemset_frozen] = count
                 frequent_itemsets[itemset_frozen] = count
+            elif size == 1:
+                # Track infrequent 1-itemsets
+                infrequent_items.add(list(itemset)[0])
 
         if verbose:
             print("=========================")
@@ -67,15 +82,25 @@ def frequent_itemset_generation_stepwise(transaction_collection, minsup, verbose
     k = 2
     while L[k-2]:
         Ck = set()
+        Ck_pruned = set()
         prev_itemsets = list(L[k-2].keys())
+
         for i in range(len(prev_itemsets)):
             for j in range(i + 1, len(prev_itemsets)):
                 candidate = prev_itemsets[i] | prev_itemsets[j]
                 if len(candidate) == k:
-                    Ck.add(candidate)
+                    # Check if candidate has infrequent (k-1)-subsets
+                    if has_infrequent_subset(candidate, L[k-2]):
+                        Ck_pruned.add(candidate)
+                    else:
+                        Ck.add(candidate)
 
         if verbose:
             print(f"{k}-itemsets")
+            # Print pruned candidates
+            for candidate in sorted(Ck_pruned, key=lambda x: sorted(x)):
+                itemset_str = ",".join(sorted(candidate))
+                print(f"{itemset_str} N")
 
         candidate_counts = {c: 0 for c in Ck}
         for transaction in transaction_collection:
@@ -94,6 +119,9 @@ def frequent_itemset_generation_stepwise(transaction_collection, minsup, verbose
                 status = "F" if count >= minsup else "I"
                 print(f"{itemset_str} {count} {status}")
             print("=========================")
+
+        if not Lk:
+            break
 
         L.append(Lk)
         k += 1
